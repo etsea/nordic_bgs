@@ -29,9 +29,21 @@ if (-f "./src/bg_randomizer.pl") {
 my $display = $ENV{DISPLAY} || ':0';
 my $xauthority = $ENV{XAUTHORITY} || "$ENV{HOME}/.Xauthority";
 
-my $env_insert = "\$ENV{'DISPLAY'} = '$display';\n\$ENV{'XAUTHORITY'} = '$xauthority';\n";
+my $env_insert = <<PERLCODE;
+\$ENV{'DISPLAY'} = '$display';
+\$ENV{'XAUTHORITY'} = '$xauthority';
+PERLCODE
 
-system("perl -i -pe 'print \"$env_insert\" if \$. == 5' $bg_dir/$bg_script_name");
+open(my $fh, '>>', "$bg_dir/$bg_script_name") or die "Could not open file '$bg_dir/$bg_script_name': $!";
+seek $fh, 0, 0;  # go to the start of the file
+my @lines = <$fh>;
+close $fh;
+
+splice @lines, 4, 0, $env_insert;  # insert environment settings after line 4
+
+open(my $out, '>', "$bg_dir/$bg_script_name") or die "Could not open file '$bg_dir/$bg_script_name': $!";
+print $out join("", @lines);
+close $out;
 
 # Prompt the user for cron job interval
 print "Please enter the interval (in minutes between 1 and 120) for the cron job: ";
