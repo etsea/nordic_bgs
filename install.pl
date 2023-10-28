@@ -29,8 +29,9 @@ if (-f "./src/bg_randomizer.pl") {
 my $display = $ENV{DISPLAY} || ':0';
 my $xauthority = $ENV{XAUTHORITY} || "$ENV{HOME}/.Xauthority";
 
-my $env_insert = "BEGIN {\n\$ENV{'DISPLAY'} = '$display';\n\$ENV{'XAUTHORITY'} = '$xauthority';\n}\n";
-system("perl -i -p0e 's/^/$env_insert/' $bg_dir/$bg_script_name");
+my $env_insert = "\$ENV{'DISPLAY'} = '$display';\n\$ENV{'XAUTHORITY'} = '$xauthority';\n";
+
+system("perl -i -pe 'print \"$env_insert\" if \$. == 5' $bg_dir/$bg_script_name");
 
 # Prompt the user for cron job interval
 print "Please enter the interval (in minutes between 1 and 120) for the cron job: ";
