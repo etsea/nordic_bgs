@@ -34,13 +34,14 @@ my $env_insert = <<PERLCODE;
 \$ENV{'XAUTHORITY'} = '$xauthority';
 PERLCODE
 
-open(my $fh, '>>', "$bg_dir/$bg_script_name") or die "Could not open file '$bg_dir/$bg_script_name': $!";
-seek $fh, 0, 0;  # go to the start of the file
+# Read the current content of the setbg.pl file
+open(my $fh, '<', "$bg_dir/$bg_script_name") or die "Could not open file '$bg_dir/$bg_script_name': $!";
 my @lines = <$fh>;
 close $fh;
 
 splice @lines, 4, 0, $env_insert;  # insert environment settings after line 4
 
+# Write the modified content back to setbg.pl
 open(my $out, '>', "$bg_dir/$bg_script_name") or die "Could not open file '$bg_dir/$bg_script_name': $!";
 print $out join("", @lines);
 close $out;
