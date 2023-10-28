@@ -10,7 +10,7 @@ my $output_dir = './nordic_bgs';
 my $log_file = './generation_log.txt';
 
 # Utility check
-foreach my $util (qw/convert identify xrandr/) {
+foreach my $util (qw/convert identify xrandr xz/) {
     unless (`which $util`) {
         die "Error: $util is not installed!\n";
     }
@@ -46,7 +46,7 @@ for my $file (glob "$src_dir/*.webp") {
     # Image processing
     my $img_width = `identify -format "%w" "$temp_file"`;
     my $img_height = `identify -format "%h" "$temp_file"`;
-    
+
     # Resize logic (unchanged from previous)
     my $img_aspect = $img_width / $img_height;
     my $res_aspect = $resolution_width / $resolution_height;
@@ -59,9 +59,9 @@ for my $file (glob "$src_dir/*.webp") {
     # Crop and save to the final destination
     system("convert", "$temp_file", "-gravity", "center", "-crop", "${resolution_width}x${resolution_height}+0+0", "$output_file");
 
-    # Compress
+    # Compress using xz
     print_log("Compressing $output_file...");
-    system("gzip", "-9", "$output_file");
+    system("xz", "-9", "$output_file");
 
     $file_number++;
 }

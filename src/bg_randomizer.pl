@@ -14,17 +14,17 @@ unless (-d $bg_dir) {
 }
 
 # Check for necessary utilities
-foreach my $util (qw/gzcat feh/) {
+foreach my $util (qw/xzcat feh/) {
     unless (`which $util`) {
         log_error("$util is not installed!");
         exit 1;
     }
 }
 
-# Fetch all .bmp.gz files from the directory
-my @files = glob("$bg_dir/*.bmp.gz");
+# Fetch all .bmp.xz files from the directory
+my @files = glob("$bg_dir/*.bmp.xz");
 unless (@files) {
-    log_error("No .bmp.gz files found in $bg_dir");
+    log_error("No .bmp.xz files found in $bg_dir");
     exit 1;
 }
 
@@ -47,7 +47,7 @@ my @eligible_files = grep { my $file = $_; not grep { $_ eq $file } @recent_back
 my $random_file = $eligible_files[int(rand(@eligible_files))];
 
 # Decompress and set wallpaper
-system("gzcat \"$random_file\" | feh --bg-scale -");
+system("xzcat \"$random_file\" | feh --bg-scale -");
 
 # Update recent.log with the selected file
 unshift @recent_backgrounds, $random_file;
